@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Go Take A Hike</title>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <link href="assets/style.css?2" rel="stylesheet">
+  <style>
+      
+@font-face {
+    font-family: AkkBd_Pro_1;
+    src: url('assets/AkkBd_Pro_1.otf');
+}
+html, body {
+    font-family: AkkBd_Pro_1, sans-serif;
+    -ms-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+}  
+      
+      
+      .img {
+        z-index: 0;
+       }
+       
+    .thumbnailaaa {
+        position: relative;
+        max-width: 50%;
+        border: 0px;
+    }
+
+.captionaaa {
+    position: absolute;
+    margin: 0;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+}
+      
+ </style>
+ 
+</head>
+
+  <body class="text-center">
+    <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+  <header class="masthead mb-auto">
+    <div class="inner">
+      
+    </div>
+  </header>
+
+  <main role="main" class="inner cover">
+    <div class="container">
+        
+    
+        <img id="id-hike-img" src="" class="img-fluid overflow-hidden thumbnailaaa"/>
+        <h1 class="cover-heading captionaaa " id="id-hike-text"><a onclick="tap_to_start()">TAP TO START</a></h1>
+    
+    </div>
+  </main>
+
+  <footer class="mastfoot mt-auto">
+    <div class="inner">
+      <p><a onclick="tap_to_stop()" >stop</a> | <a onclick="tap_to_restart()">restart</a></p>
+    </div>
+  </footer>
+</div>
+
+
+  <!-- Bootstrap core JavaScript -->
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+
+<script >
+    
+//const axios = require('axios').default;
+
+var synth = window.speechSynthesis;
+
+
+var pitchValue = 1
+var rateValue = 1
+
+
+var url_data = "https://sheets.googleapis.com/v4/spreadsheets/1vOdhkL_KBrn8yS6y9pnN0MDHqFTJv_PGgdLnWMpuePY/values/hike_1!A2:L151?key=AIzaSyCeCDCi5joy4z-J_r6_724fi3FK5-ZHXOw"
+
+
+var current_page = 0; 
+
+var content = []
+
+var cancel = false;
+
+var delay_start = 1
+var delay_end = 1
+
+$( document ).ready(function() {
+    console.log( "ready!" );
+    
+   
+    //check browser
+    if ('speechSynthesis' in window) {
+        // we can to text to speech
+    } else {
+        $("#id-hike-text").text( "BROWSER NOT SUPPORTED" );
+    }
+    
+    
+  axios.get(url_data)
+  .then(function (response) {
+    console.log(response.data.values);   
+    
+    content = response.data.values
+    
+    
+                                                                                                                                                     
+  })
+  .catch(function (error) {
+    console.log(error);                                                                                                                                                       
+  });
+    
+    
+    
+    
+});
+
+
+function tap_to_start() {
+    read_current_page()
+}
+    
+
+
+function read_current_page() {
+    
+    console.log("READING PAGE:" + current_page)
+    
+    $("#id-hike-img").attr('src','')
+    $("#id-hike-img").hide()
+    
+    page_content = content[current_page]
+    
+    var page_text = page_content[0]
+    var page_speech = page_content[1]
+    var page_color = page_content[2]
+    delay_start = page_content[3]
+    delay_end = page_content[4]
+    pitchValue = page_content[5] 
+    rateValue = page_content[6]
+    
+    var background_image = page_content[7]
+    
+    $("#id-hike-text").text( page_text );
+
+    if (background_image ) {
+        $("#id-hike-img").attr('src',background_image)
+        $("#id-hike-img").show()
+    }
+    
+    
+    setTimeout(function(){ if (!cancel) { speak(page_speech) } }, delay_start * 1000);
+    
+    
+    
+    $('body').css('background-color', page_color);
+    
+    
+}
+ 
+ 
+
+function speak(text_to_speech) {
+    
+    if (synth.speaking) {
+        console.error('speechSynthesis.speaking');
+        return;
+    }
+    
+    
+
+    
+    var to_speak = new SpeechSynthesisUtterance(text_to_speech);
+    
+    to_speak.onend = function (event) {
+        console.log('SpeechSynthesisUtterance.onend');
+        setTimeout(function(){ if (!cancel) { goto_next_page_auto_play() } }, delay_end * 1000);
+        
+    }
+    
+    to_speak.onerror = function (event) {
+        console.log("ERROR")
+        console.error('SpeechSynthesisUtterance.onerror');
+    }
+    
+    
+    //just use default voice    
+    //var voices = synth.getVoices();
+    //to_speak.voice = voices.filter(function(voice) { return voice.name == 'Daniel'; })[0];
+
+
+    
+    
+    to_speak.pitch = pitchValue;
+    to_speak.rate = rateValue;
+    
+    synth.speak(to_speak);
+    
+    
+} 
+ 
+
+function goto_next_page_auto_play() {
+    
+    
+    
+    if (current_page + 1 < content.length) {
+        current_page++;
+        read_current_page();
+        return
+        
+    } 
+    
+    $("#id-hike-text").text( "FIN." );
+    $('body').css('background-color', '#333333');
+    
+    
+}
+
+
+    
+function tap_to_restart() {
+    
+    current_page = 0; 
+    cancel = false;
+    read_current_page();
+}
+
+
+function tap_to_stop() {
+    
+    synth.cancel();
+    cancel = true;
+    
+}
+    
+    
+function go_next_page() {
+    
+}
+
+function go_previous_page() {
+    
+}
+    
+    
+    
+</script>
+    
+
+
+
+
+
+
+
+</body>
+
+</html>
+
+
+
