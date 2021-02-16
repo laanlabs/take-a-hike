@@ -12,67 +12,66 @@
 
   <!-- Bootstrap core CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-  <link href="assets/style.css?2" rel="stylesheet">
+  <link href="assets/style.css?3" rel="stylesheet">
   <style>
       
 @font-face {
     font-family: AkkBd_Pro_1;
     src: url('assets/AkkBd_Pro_1.otf');
 }
+
+
+
 html, body {
     font-family: AkkBd_Pro_1, sans-serif;
-    -ms-text-size-adjust: 100%;
-    -webkit-text-size-adjust: 100%;
-}  
-      
-      
-      .img {
-        z-index: 0;
-       }
-       
-    .thumbnailaaa {
-        position: relative;
-        max-width: 50%;
-        border: 0px;
-    }
 
-.captionaaa {
-    position: absolute;
-    margin: 0;
-    top: 50%;
-    left: 50%;
-    margin-right: -50%;
-    transform: translate(-50%, -50%);
+    font-size: 1.8rem;
+} 
+
+.section-text-box {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 50%;
+    margin: auto;
+    height: 80%;
+    width: 80%;
+     
+    
+}
+
+ 
+      
+      
+.img {
+z-index: 0;
 }
       
  </style>
  
+ 
+
+ 
 </head>
 
-  <body class="text-center">
-    <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
-  <header class="masthead mb-auto">
-    <div class="inner">
-      
-    </div>
-  </header>
+  <body class="">
 
-  <main role="main" class="inner cover">
-    <div class="container">
+
+    <div class="" id="fullpage">
+        <div class="section text-center" id="start-click">start</div>
+
+
+
+    </div>
+    
+    <!-- 
+
+  <footer class="w-100 mt-auto">
+    <div class="">
         
-    
-        <img id="id-hike-img" src="" class="img-fluid overflow-hidden thumbnailaaa"/>
-        <h1 class="cover-heading captionaaa " id="id-hike-text"><a onclick="tap_to_start()">TAP TO START</a></h1>
-    
-    </div>
-  </main>
-
-  <footer class="mastfoot mt-auto">
-    <div class="inner">
       <p><a onclick="tap_to_stop()" >stop</a> | <a onclick="tap_to_restart()">restart</a></p>
     </div>
   </footer>
-</div>
+  -->
 
 
   <!-- Bootstrap core JavaScript -->
@@ -80,6 +79,17 @@ html, body {
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+ <link rel="stylesheet" type="text/css" href="./dist/fullpage.css" />
+
+<!-- This following line is optional. Only necessary if you use the option css3:false and you want to use other easing effects rather than "easeInOutCubic". -->
+<script src="./vendors/easings.min.js"></script>
+
+
+<!-- This following line is only necessary in the case of using the option `scrollOverflow:true` -->
+<script type="text/javascript" src="./vendors/scrolloverflow.min.js"></script>
+
+<script type="text/javascript" src="./dist/fullpage.js"></script>
 
 
 <script >
@@ -123,7 +133,9 @@ $( document ).ready(function() {
     
     content = response.data.values
     
+    loadContent()
     
+
                                                                                                                                                      
   })
   .catch(function (error) {
@@ -136,6 +148,90 @@ $( document ).ready(function() {
 });
 
 
+function loadContent() {
+    
+    console.log("CONTENT", content)
+    
+    let lastColor = "#ffffff"
+    
+    for (var i=0; i < content.length; i++) {
+        
+        let slide = content[i];
+        console.log("SLIDE", slide)
+        
+        
+        
+        
+        var background_image = slide[7]
+
+        let style_background = ""
+        if (background_image ) {
+            style_background = "background-image: url('" + background_image + "');"
+        }
+        
+        
+        
+        let currentColor = slide[2];
+        
+        style_background_gradient = "background-image: linear-gradient(" + lastColor + "," + currentColor + ");"
+
+        lastColor = currentColor;
+        
+        let div = '<div class="section text-center" id="" style="' + style_background_gradient + '">'
+        div +=      '<div class="section-text-box" style="' + style_background + '">'
+        div +=      slide[0]
+        div +=     '</div>'
+        div +=     '</div>'
+        
+        
+        $("#fullpage").append(div); 
+    }
+    
+    setupFullPage()
+}
+
+
+/*
+    $('#fullpage').fullpage({
+		//options here
+		autoScrolling:true,
+		scrollHorizontally: true
+	});
+*/
+
+
+$('#start-click').click(function(e){
+        e.preventDefault();
+        //$.fn.fullpage.moveSectionDown();
+        
+        read_current_page()
+    });
+
+
+
+
+function setupFullPage(){
+    
+    $('#fullpage').fullpage({
+		//options here
+		autoScrolling:true,
+		scrollHorizontally: true,
+		scrollingSpeed: 3000,
+		continuousHorizontal: true,
+		interlockedSlides: true,
+        easing: 'easeInOutCubic',
+        easingcss3: 'ease',
+	});
+
+	//methods
+	//$.fn.fullpage.setAllowScrolling(false);
+}
+
+
+
+
+
+
 function tap_to_start() {
     read_current_page()
 }
@@ -143,6 +239,9 @@ function tap_to_start() {
 
 
 function read_current_page() {
+    
+    $.fn.fullpage.moveSectionDown();
+
     
     console.log("READING PAGE:" + current_page)
     
@@ -159,6 +258,7 @@ function read_current_page() {
     pitchValue = page_content[5] 
     rateValue = page_content[6]
     
+/*
     var background_image = page_content[7]
     
     $("#id-hike-text").text( page_text );
@@ -167,13 +267,14 @@ function read_current_page() {
         $("#id-hike-img").attr('src',background_image)
         $("#id-hike-img").show()
     }
+*/
     
     
     setTimeout(function(){ if (!cancel) { speak(page_speech) } }, delay_start * 1000);
     
     
     
-    $('body').css('background-color', page_color);
+    //$('body').css('background-color', page_color);
     
     
 }
